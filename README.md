@@ -22,7 +22,7 @@ Add to `POM.xml`
 <dependency>
   <groupId>com.qmetry</groupId>
   <artifactId>qaf-reportportal-integration</artifactId>
-  <version>1.0.0</version>
+  <version>0.0.1</version>
 </dependency>
 
 ```
