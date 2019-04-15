@@ -57,7 +57,7 @@ log4j.appender.reportportal.layout.ConversionPattern=[%d{HH:mm:ss}] %-5p (%F:%L)
 ```
 
 ### Listener class:
-`com.epam.reportportal.testng.ReportPortalTestNGListener`
+`com.qmetry.qaf.reportportal.ReportPortalQAFListener`
 
 There are several ways how to install listener:
 

@@ -146,7 +146,7 @@ public class QAFService implements IQAFService {
 			message = message + "\n\t" + getStackTraceAsString(commandHandler.getException());
 			// level = "ERROR";
 		}
-		sendLog(message, level, commandHandler.getStartTime(),null);
+		sendLog(message, level);
 	}
 
 	@Override

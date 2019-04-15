@@ -36,16 +36,14 @@ import org.openqa.selenium.remote.DriverCommand;
 import com.epam.reportportal.listeners.Statuses;
 import com.epam.ta.reportportal.ws.model.log.SaveLogRQ.File;
 import com.qmetry.qaf.automation.core.QAFListenerAdapter;
+import com.qmetry.qaf.automation.core.TestBaseProvider;
 import com.qmetry.qaf.automation.step.StepExecutionTracker;
 import com.qmetry.qaf.automation.ui.webdriver.CommandTracker;
 import com.qmetry.qaf.automation.ui.webdriver.QAFExtendedWebDriver;
 import com.qmetry.qaf.automation.ui.webdriver.QAFExtendedWebElement;
 
 public class QAFListener extends QAFListenerAdapter {
-	@Override
-	public void beforeCommand(QAFExtendedWebDriver driver, CommandTracker commandTracker) {
-		ReportPortalQAFListener.getQAFService().logCommand(commandTracker);
-	}
+
 	@Override
 	public void beforeCommand(QAFExtendedWebElement element, CommandTracker commandTracker) {
 		ReportPortalQAFListener.getQAFService().logCommand(commandTracker);
@@ -57,17 +55,39 @@ public class QAFListener extends QAFListenerAdapter {
 	}
 
 	@Override
+	public void onFailure(QAFExtendedWebElement element, CommandTracker commandTracker) {
+		ReportPortalQAFListener.getQAFService().logCommand(commandTracker);
+	}
+
+	@Override
+	public void beforeCommand(QAFExtendedWebDriver driver, CommandTracker commandTracker) {
+		if (!commandTracker.getCommand().equalsIgnoreCase(DriverCommand.SCREENSHOT)) {
+			ReportPortalQAFListener.getQAFService().logCommand(commandTracker);
+		}
+	}
+
+	@Override
 	public void afterCommand(QAFExtendedWebDriver driver, CommandTracker commandTracker) {
 		if (!commandTracker.getCommand().equalsIgnoreCase(DriverCommand.SCREENSHOT)) {
 			ReportPortalQAFListener.getQAFService().logCommand(commandTracker);
 		} else {
-			String base64Str = (String) commandTracker.getResponce().getValue();
-			File file = new File();
-			file.setContent(Base64.decodeBase64(base64Str.getBytes()));
-			file.setContentType("image/png");
-			file.setName(UUID.randomUUID().toString());
-			ReportPortalQAFListener.getQAFService().sendLog("[screenshot]:{}", "INFO", commandTracker.getStartTime(), file);
+			try {
+				String base64Str = (String) commandTracker.getResponce().getValue();
+				File file = new File();
+				file.setContent(Base64.decodeBase64(base64Str.getBytes()));
+				file.setContentType("image/png");
+				file.setName(UUID.randomUUID().toString());
+				ReportPortalQAFListener.getQAFService().sendLog("[screenshot]:", "INFO", commandTracker.getEndTime(),
+						file);
+			} catch (Exception e) {
+				// do nothing...
+			}
 		}
+	}
+
+	@Override
+	public void onFailure(QAFExtendedWebDriver driver, CommandTracker commandTracker) {
+		ReportPortalQAFListener.getQAFService().logCommand(commandTracker);
 	}
 
 	@Override
@@ -89,6 +109,8 @@ public class QAFListener extends QAFListenerAdapter {
 
 	@Override
 	public void afterExecute(StepExecutionTracker stepExecutionTracker) {
-		ReportPortalQAFListener.getQAFService().afterStepExecute(stepExecutionTracker, Statuses.PASSED);
+
+		ReportPortalQAFListener.getQAFService().afterStepExecute(stepExecutionTracker,
+				TestBaseProvider.instance().get().getVerificationErrors() > 0 ? Statuses.FAILED : Statuses.PASSED);
 	}
 }

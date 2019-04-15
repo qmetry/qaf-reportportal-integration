@@ -12,7 +12,7 @@
 <ivy-module version="2.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
-	<info organisation="com.qmetry" module="qaf-reportportal-integration" status="integration">
+	<info organisation="com.qmetry" module="qaf-reportportal-integration" status="release"  revision="${release.num}">
 	</info>
 	<configurations>
 	        <conf name="compile"  description="Required to compile application"/>
@@ -24,7 +24,7 @@
 	<dependencies>
 		<dependency org="com.qmetry" name="qaf" rev="latest.integration" conf="import->default" />
 		<dependency org="com.epam.reportportal" name="agent-java-testng" rev="4.2.1" conf="compile->default">
-			<exclude org="org.tesng" name="testng"/>
+			<exclude org="org.testng" name="testng"/>
 		</dependency>
 		<dependency org="log4j" name="log4j" rev="latest.integration" conf="compile->default"/>
 		
